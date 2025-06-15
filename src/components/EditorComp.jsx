@@ -11,6 +11,7 @@ const EditorComp = () => {
   const [output, setOutput] = useState('');
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errorState, setErrorState] = useState(false);
 
   function handleEditorDidMount(editor, monaco) {
     editorRef.current = editor;
@@ -53,7 +54,13 @@ const EditorComp = () => {
       });
 
       const runOutput = response.data.run;
+      
       const result = runOutput.stdout || runOutput.stderr || 'No output';
+      if(result==runOutput.stderr) {
+        setErrorState(true);
+      }else {
+        setErrorState(false);
+      }
       setOutput(result);
     } catch (error) {
       console.error(error);
@@ -62,7 +69,7 @@ const EditorComp = () => {
       setLoading(false);
     }
   }
-
+  console.log(errorState);
   return (
     <div style={{ display: 'flex', flexDirection: 'row', height: '100vh', width: '100vw' }}>
       {/* Editor Section */}
@@ -117,7 +124,7 @@ const EditorComp = () => {
         padding: '10px'
       }}>
         <h3>Output:</h3>
-        {loading ? <Loader/> : <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>{output}</pre>}
+        {loading ? <Loader/> : <pre style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word', color: errorState ? 'red' : 'white'   }}>{output}</pre>}
       </div>
     </div>
   );
